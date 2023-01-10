@@ -5,7 +5,7 @@ with open('README.md', 'r') as f:
 
 setuptools.setup(
     name='aiothingy',
-    version='0.0.0',
+    version='0.0.1',
     author='davy wybiral',
     author_email="davy.wybiral@gmail.com",
     description='Asynchronous Python library for interacting with the Nordic Thingy52 over Bluetooth',

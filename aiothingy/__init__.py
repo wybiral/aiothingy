@@ -8,7 +8,7 @@ class Thingy52:
         self.name = Name(self)
         self.temperature = Temperature(self)
         self.pressure = Pressure(self)
-        self.humifity = Humidity(self)
+        self.humidity = Humidity(self)
         self.air_quality = AirQuality(self)
         self.color = Color(self)
         self.led = LED(self)
