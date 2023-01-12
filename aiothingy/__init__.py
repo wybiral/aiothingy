@@ -15,6 +15,7 @@ class Thingy52:
         self.button = Button(self)
         self.motion_config = MotionConfig(self)
         self.orientation = Orientation(self)
+        self.step_counter = StepCounter(self)
         self.raw = Raw(self)
         self.euler = Euler(self)
         self.heading = Heading(self)
@@ -233,6 +234,19 @@ class Orientation(Characteristic):
         x = struct.unpack('B', data)
         names = ['left', 'up', 'right', 'down']
         return names[x[0]]
+
+
+class StepCounter(Characteristic):
+
+    name = 'step_counter'
+    uuid = 'ef680405-9b35-4933-9b10-52ffa9740042'
+
+    def decode(self, data):
+        count, time = struct.unpack('<II', data)
+        return {
+            'count': count,
+            'time': time,
+        }
 
 
 class Raw(Characteristic):
