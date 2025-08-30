@@ -14,6 +14,7 @@ class Thingy52:
         self.led = LED(self)
         self.button = Button(self)
         self.motion_config = MotionConfig(self)
+        self.tap = Tap(self)
         self.orientation = Orientation(self)
         self.step_counter = StepCounter(self)
         self.raw = Raw(self)
@@ -225,6 +226,20 @@ class MotionConfig(Characteristic):
             'magnet_comp_interval': x[2],
             'motion_frequency': x[3],
             'wake_on_motion': x[4],
+        }
+
+
+class Tap(Characteristic):
+
+    name = 'tap'
+    uuid = 'ef680402-9b35-4933-9b10-52ffa9740042'
+
+    def decode(self, data):
+        x = struct.unpack('<BB', data)
+        directions = ['', 'x_up', 'x_down', 'y_up', 'y_down', 'z_up', 'z_down']
+        return {
+            'direction': directions[x[0]],
+            'count': x[1],
         }
 
 
