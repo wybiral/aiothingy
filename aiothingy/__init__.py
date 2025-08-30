@@ -20,6 +20,10 @@ class Thingy52:
         self.euler = Euler(self)
         self.heading = Heading(self)
         self.gravity = Gravity(self)
+        self.sound_config = SoundConfig(self)
+        self.speaker = Speaker(self)
+        self.speaker_status = SpeakerStatus(self)
+        self.microphone = Microphone(self)
 
     async def connect(self):
         await self.client.connect()
@@ -132,7 +136,6 @@ class LED(Characteristic):
     colors = ['red', 'green', 'yellow', 'blue', 'purple', 'cyan', 'white']
 
     def encode(self, x):
-        data = None
         if x['mode'] == 'off':
             return struct.pack('<B', 0)
         elif x['mode'] == 'constant':
@@ -311,3 +314,75 @@ class Gravity(Characteristic):
             'y': y,
             'z': z,
         }
+
+
+class SoundConfig(Characteristic):
+
+    name = 'sound_config'
+    uuid = 'ef680501-9b35-4933-9b10-52ffa9740042'
+
+    def encode(self, x):
+        speaker_mode = x.get('speaker_mode', 0x01)
+        microphone_mode = x.get('microphone_mode', 0x01)
+        return struct.pack('<BB', speaker_mode, microphone_mode)
+
+    def decode(self, data):
+        x = struct.unpack('<BB', data)
+        return {
+            'speaker_mode': x[0],
+            'microphone_mode': x[1],
+        }
+
+
+class Speaker(Characteristic):
+
+    name = 'speaker'
+    uuid = 'ef680502-9b35-4933-9b10-52ffa9740042'
+
+    def encode(self, x):
+        if x['mode'] == 0x01:
+            return struct.pack(
+                '<HHB',
+                x['frequency'],
+                x['duration'],
+                x['volume'],
+            )
+        elif x['mode'] == 0x02:
+            return x['data']
+        elif x['mode'] == 0x03:
+            return struct.pack('<B', x['sample'])
+
+    async def play_frequency(self, frequency=440, duration=1000, volume=100):
+        await self.write({
+            'mode': 0x01,
+            'frequency': frequency,
+            'duration': duration,
+            'volume': volume,
+        })
+
+    async def play_pcm(self, data):
+        await self.write({'mode': 0x02, 'data': data})
+
+    async def play_sample(self, sample):
+        await self.write({'mode': 0x03, 'sample': sample})
+
+
+class SpeakerStatus(Characteristic):
+
+    name = 'speaker_status'
+    uuid = 'ef680503-9b35-4933-9b10-52ffa9740042'
+
+    def decode(self, data):
+        x = struct.unpack('B', data)
+        options = ['finished', 'buffer_warning', 'buffer_ready', 'packet_disregarder', 'invalid_command']
+        return {'status': options[x[0]]}
+
+
+class Microphone(Characteristic):
+
+    name = 'microphone'
+    uuid = 'ef680504-9b35-4933-9b10-52ffa9740042'
+
+    def decode(self, data):
+        return data
+
