@@ -6,6 +6,7 @@ class Thingy52:
     def __init__(self, address='D7:FE:7E:D2:E2:73'):
         self.client = BleakClient(address)
         self.name = Name(self)
+        self.nfc = NFC(self)
         self.temperature = Temperature(self)
         self.pressure = Pressure(self)
         self.humidity = Humidity(self)
@@ -78,6 +79,18 @@ class Name(Characteristic):
 
     def decode(self, data):
         return data.decode()
+
+
+class NFC(Characteristic):
+
+    name = 'nfc'
+    uuid = 'ef680109-9b35-4933-9b10-52ffa9740042'
+
+    def encode(self, data):
+        return data
+
+    def decode(self, data):
+        return data
 
 
 class Temperature(Characteristic):
