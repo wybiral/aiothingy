@@ -414,3 +414,13 @@ class Microphone(Characteristic):
     def decode(self, data):
         return data
 
+
+class Battery(Characteristic):
+
+    name = 'battery'
+    uuid = 'ef68180f-9b35-4933-9b10-52ffa9740042'
+
+    def decode(self, data):
+        x = struct.unpack('B', data)
+        return x[0]
+
